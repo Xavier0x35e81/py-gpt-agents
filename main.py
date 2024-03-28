@@ -33,4 +33,4 @@ agent_executor = AgentExecutor(
     tools=tools,
 )
 
-agent_executor.invoke({"input": "How many users are in the database?"})
+agent_executor.invoke({"input": "How many users have provided a shipping address?"})
