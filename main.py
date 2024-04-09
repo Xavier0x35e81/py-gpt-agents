@@ -6,6 +6,7 @@ from langchain.prompts import (
 )
 from langchain.schema import SystemMessage
 from langchain.agents import create_openai_functions_agent, AgentExecutor
+from langchain.memory import ConversationBufferMemory
 from dotenv import load_dotenv
 
 from tools.sql import run_query_tool, list_tables, describe_tables_tool
@@ -26,11 +27,16 @@ prompt = ChatPromptTemplate(
                 "Instead, use the describe_tables function."
             )
         ),
+        MessagesPlaceholder(variable_name="chat_history"),
         HumanMessagePromptTemplate.from_template("{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ],
 )
 
+# `return_messages` is set to True to return the list of messages as objects instead of strings.
+# Message as strings for completion based models.
+# Messages as objects for message based models.
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 tools = [run_query_tool, describe_tables_tool, write_report_tool]
 
 agent = create_openai_functions_agent(
@@ -43,10 +49,11 @@ agent_executor = AgentExecutor(
     agent=agent,
     verbose=True,
     tools=tools,
+    memory=memory,
 )
 
 agent_executor.invoke(
-    {
-        "input": "Summarize the top 5 popular products. Write the results to a report file."
-    }
+    {"input": "How many orders are there. Write the results to a report file."}
 )
+
+agent_executor.invoke({"input": "Repeat the exact same process for users."})
