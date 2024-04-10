@@ -8,6 +8,7 @@ name = "pypi"
 langchain = "==0.1.9"
 python-dotenv = "==1.0.0"
 langchain-openai = "==0.0.7"
+pyboxen = "*"
 
 [dev-packages]
 
